@@ -1,0 +1,1 @@
+# scandit-flutter-datacapture-text

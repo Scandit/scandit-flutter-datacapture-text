@@ -1,1 +1,1 @@
-# scandit-flutter-datacapture-text
+ScanditTextCapture implements the text capture capabilities of the Scandit Data Capture SDK.

@@ -15,19 +15,34 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /** ScanditFlutterDatacaptureTextPlugin */
 class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, MethodCallHandler {
+    companion object {
+        @JvmStatic
+        private val lock = ReentrantLock()
+
+        @JvmStatic
+        private var isPluginAttached = false
+    }
+
     private var scanditFlutterDataCaptureTextHandler:
         ScanditFlutterDataCaptureTextHandler? = null
 
     override fun onAttachedToEngine(
         @NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
     ) {
-        scanditFlutterDataCaptureTextHandler = ScanditFlutterDataCaptureTextHandler(
-            provideScanditFlutterTextCaptureListener(flutterPluginBinding.binaryMessenger)
-        )
-        scanditFlutterDataCaptureTextHandler?.onAttachedToEngine(flutterPluginBinding)
+        lock.withLock {
+            if (isPluginAttached) return
+
+            scanditFlutterDataCaptureTextHandler = ScanditFlutterDataCaptureTextHandler(
+                provideScanditFlutterTextCaptureListener(flutterPluginBinding.binaryMessenger)
+            )
+            scanditFlutterDataCaptureTextHandler?.onAttachedToEngine(flutterPluginBinding)
+            isPluginAttached = true
+        }
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -35,8 +50,11 @@ class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, MethodCallHandle
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        scanditFlutterDataCaptureTextHandler?.onDetachedFromEngine(binding)
-        scanditFlutterDataCaptureTextHandler = null
+        lock.withLock {
+            scanditFlutterDataCaptureTextHandler?.onDetachedFromEngine(binding)
+            scanditFlutterDataCaptureTextHandler = null
+            isPluginAttached = false
+        }
     }
 
     private fun provideScanditFlutterTextCaptureListener(binaryMessenger: BinaryMessenger) =

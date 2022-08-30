@@ -21,6 +21,10 @@ abstract class TextCaptureListener {
   void didCaptureText(TextCapture textCapture, TextCaptureSession session);
 }
 
+abstract class TextCaptureAdvancedListener {
+  void didCaptureText(TextCapture textCapture, TextCaptureSession session, Future<FrameData> getFrameData());
+}
+
 class TextCapture extends DataCaptureMode {
   bool _enabled = true;
 
@@ -29,6 +33,8 @@ class TextCapture extends DataCaptureMode {
   TextCaptureSettings _settings;
 
   final List<TextCaptureListener> _listeners = [];
+
+  final List<TextCaptureAdvancedListener> _advancedListeners = [];
 
   TextCaptureFeedback _feedback = TextCaptureFeedback.defaultFeedback;
 
@@ -74,18 +80,39 @@ class TextCapture extends DataCaptureMode {
   }
 
   void addListener(TextCaptureListener listener) {
-    if (_listeners.isEmpty) {
-      _controller.subscribeListeners();
-    }
+    _checkAndSubscribeListeners();
     if (_listeners.contains(listener)) {
       return;
     }
     _listeners.add(listener);
   }
 
+  void addAdvancedListener(TextCaptureAdvancedListener listener) {
+    _checkAndSubscribeListeners();
+    if (_advancedListeners.contains(listener)) {
+      return;
+    }
+    _advancedListeners.add(listener);
+  }
+
+  void _checkAndSubscribeListeners() {
+    if (_listeners.isEmpty && _advancedListeners.isEmpty) {
+      _controller.subscribeListeners();
+    }
+  }
+
   void removeListener(TextCaptureListener listener) {
     _listeners.remove(listener);
-    if (_listeners.isEmpty) {
+    _checkAndUnsubscribeListeners();
+  }
+
+  void removeAdvancedListener(TextCaptureAdvancedListener listener) {
+    _advancedListeners.remove(listener);
+    _checkAndUnsubscribeListeners();
+  }
+
+  void _checkAndUnsubscribeListeners() {
+    if (_listeners.isEmpty && _advancedListeners.isEmpty) {
       _controller.unsubscribeListeners();
     }
   }
@@ -116,17 +143,22 @@ class _TextCaptureListenerController {
   final TextCapture _textCapture;
   StreamSubscription<dynamic>? _textCaptureSubscription;
 
+  static const String _addTextCaptureListenerName = 'addTextCaptureListener';
+  static const String _textCaptureFinishDidCaptureName = 'textCaptureFinishDidCapture';
+  static const String _getLastFrameDataName = 'getLastFrameData';
+  static const String _removeTextCaptureListenerName = 'removeTextCaptureListener';
+
   _TextCaptureListenerController.forTextCapture(this._textCapture);
 
   void subscribeListeners() {
     _methodChannel
-        .invokeMethod('addTextCaptureListener')
+        .invokeMethod(_addTextCaptureListenerName)
         .then((value) => _setupTextCaptureSubscription(), onError: _onError);
   }
 
   void _setupTextCaptureSubscription() {
     _textCaptureSubscription = _eventChannel.receiveBroadcastStream().listen((event) {
-      if (_textCapture._listeners.isEmpty) return;
+      if (_textCapture._listeners.isEmpty && _textCapture._advancedListeners.isEmpty) return;
 
       var eventJSON = jsonDecode(event);
       var session = TextCaptureSession.fromJSON(jsonDecode(eventJSON['session']));
@@ -134,7 +166,7 @@ class _TextCaptureListenerController {
       if (eventName == TextCaptureListener._didCaptureEventName) {
         _notifyListenersOfDidCaptureText(session);
         _methodChannel
-            .invokeMethod('textCaptureFinishDidCapture', _textCapture.isEnabled)
+            .invokeMethod(_textCaptureFinishDidCaptureName, _textCapture.isEnabled)
             // ignore: unnecessary_lambdas
             .then((value) => null, onError: (error) => print(error));
       }
@@ -146,12 +178,26 @@ class _TextCaptureListenerController {
     for (var listener in _textCapture._listeners) {
       listener.didCaptureText(_textCapture, session);
     }
+    for (var listener in _textCapture._advancedListeners) {
+      listener.didCaptureText(_textCapture, session, _getLastFrameData);
+    }
     _textCapture._isInCallback = false;
+  }
+
+  Future<FrameData> _getLastFrameData() {
+    return _methodChannel
+        .invokeMethod(_getLastFrameDataName)
+        .then((value) => getFrom(value as String), onError: _onError);
+  }
+
+  DefaultFrameData getFrom(String response) {
+    final decoded = jsonDecode(response);
+    return DefaultFrameData.fromJSON(decoded);
   }
 
   void unsubscribeListeners() {
     _textCaptureSubscription?.cancel();
-    _methodChannel.invokeMethod('removeTextCaptureListener').then((value) => null, onError: _onError);
+    _methodChannel.invokeMethod(_removeTextCaptureListenerName).then((value) => null, onError: _onError);
   }
 
   void _onError(Object? error, StackTrace? stackTrace) {

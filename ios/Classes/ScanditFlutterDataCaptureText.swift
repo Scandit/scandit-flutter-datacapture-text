@@ -24,6 +24,7 @@ public class ScanditFlutterDataCaptureText: NSObject, ScanditFlutterDataCaptureT
         static let addListener = "addTextCaptureListener"
         static let removeListener = "removeTextCaptureListener"
         static let finishDidCaptureText = "textCaptureFinishDidCapture"
+        static let getLastFrameData = "getLastFrameData"
     }
 
     private let defaultsMethodChannel: FlutterMethodChannel
@@ -73,6 +74,8 @@ public class ScanditFlutterDataCaptureText: NSObject, ScanditFlutterDataCaptureT
             removeListener(result)
         case FunctionNames.finishDidCaptureText:
             finishDidCaptureText(enabled: call.arguments as? Bool ?? false, result: result)
+        case FunctionNames.getLastFrameData:
+            ScanditFlutterDataCaptureCore.getLastFrameData(reply: result)
         default:
             result(FlutterMethodNotImplemented)
         }

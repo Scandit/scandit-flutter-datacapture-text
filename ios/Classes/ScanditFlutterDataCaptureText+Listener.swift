@@ -5,15 +5,18 @@
  */
 
 import ScanditTextCapture
+import scandit_flutter_datacapture_core
 
 extension ScanditFlutterDataCaptureText: TextCaptureListener {
     public func textCapture(_ textCapture: TextCapture,
                             didCaptureIn session: TextCaptureSession,
                             frameData: FrameData) {
+        ScanditFlutterDataCaptureCore.lastFrame = frameData
         guard let value = textCaptureLock.wait(afterDoing: {
             return send(.didCaptureText, body: ["session": session.jsonString])
         }) else { return }
         self.textCapture?.isEnabled = value
+        ScanditFlutterDataCaptureCore.lastFrame = nil
     }
 }
 

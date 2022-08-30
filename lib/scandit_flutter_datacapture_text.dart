@@ -8,7 +8,7 @@ library scandit_flutter_datacapture_text;
 
 export 'src/captured_text.dart' show CapturedText;
 export 'src/scandit_flutter_datacapture_text.dart' show ScanditFlutterDataCaptureText;
-export 'src/text_capture.dart' show TextCapture, TextCaptureListener;
+export 'src/text_capture.dart' show TextCapture, TextCaptureListener, TextCaptureAdvancedListener;
 export 'src/text_capture_feedback.dart' show TextCaptureFeedback;
 export 'src/text_capture_overlay.dart' show TextCaptureOverlay;
 export 'src/text_capture_session.dart' show TextCaptureSession;

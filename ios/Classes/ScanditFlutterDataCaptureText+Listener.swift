@@ -26,7 +26,7 @@ extension ScanditFlutterDataCaptureText: FlutterStreamHandler {
         eventSink = events
         return nil
     }
-    
+
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
         eventSink = nil
         return nil

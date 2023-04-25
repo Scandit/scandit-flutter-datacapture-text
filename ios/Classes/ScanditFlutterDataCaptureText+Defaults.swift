@@ -10,16 +10,21 @@ import ScanditTextCapture
 
 extension ScanditFlutterDataCaptureText {
     var defaults: [String: Any] {
-        let settings = try! TextCaptureSettings(jsonString: "{}")
-        return [
-            "RecommendedCameraSettings": TextCapture.recommendedCameraSettings.defaults,
-            "TextCaptureOverlay": [
-                "Brush": TextCaptureOverlay.defaultBrush.defaults
-            ],
-            "TextCaptureSettings": [
-                "recognitionDirection": settings.recognitionDirection.jsonString,
-                "duplicateFilter": Int(settings.duplicateFilter * 1000)
+        do {
+            let settings = try TextCaptureSettings(jsonString: "{}")
+            return [
+                "RecommendedCameraSettings": TextCapture.recommendedCameraSettings.defaults,
+                "TextCaptureOverlay": [
+                    "Brush": TextCaptureOverlay.defaultBrush.defaults
+                ],
+                "TextCaptureSettings": [
+                    "recognitionDirection": settings.recognitionDirection.jsonString,
+                    "duplicateFilter": Int(settings.duplicateFilter * 1000)
+                ]
             ]
-        ]
+        } catch {
+            print(error)
+            return [:]
+        }
     }
 }

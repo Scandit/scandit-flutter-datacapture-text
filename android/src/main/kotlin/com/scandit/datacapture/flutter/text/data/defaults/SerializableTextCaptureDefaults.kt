@@ -38,7 +38,7 @@ class SerializableTextCaptureDefaults(
                 SerializableCameraSettingsDefaults(
                     TextCapture.createRecommendedCameraSettings()
                 ),
-                SerializableTextCaptureOverlayDefaults(TextCaptureOverlay.DEFAULT_BRUSH),
+                SerializableTextCaptureOverlayDefaults(TextCaptureOverlay.defaultBrush()),
                 SerializableTextCaptureSettingsDefaults(TextCaptureSettings.fromJson("{}"))
             ).toJson().toString()
         }

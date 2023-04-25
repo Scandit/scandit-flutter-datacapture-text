@@ -19,30 +19,40 @@ extension ScanditFlutterDataCaptureText {
 extension ScanditFlutterDataCaptureText: TextCaptureDeserializerDelegate {
     public func textCaptureDeserializer(_ deserializer: TextCaptureDeserializer,
                                         didStartDeserializingMode mode: TextCapture,
-                                        from JSONValue: JSONValue) {}
+                                        from jsonValue: JSONValue) {
+        // not used in frameworks
+    }
 
     public func textCaptureDeserializer(_ deserializer: TextCaptureDeserializer,
                                         didFinishDeserializingMode mode: TextCapture,
-                                        from JSONValue: JSONValue) {
-        if JSONValue.containsKey("enabled") {
-            mode.isEnabled = JSONValue.bool(forKey: "enabled")
+                                        from jsonValue: JSONValue) {
+        if jsonValue.containsKey("enabled") {
+            mode.isEnabled = jsonValue.bool(forKey: "enabled")
         }
         textCapture = mode
     }
 
     public func textCaptureDeserializer(_ deserializer: TextCaptureDeserializer,
                                         didStartDeserializingSettings settings: TextCaptureSettings,
-                                        from JSONValue: JSONValue) {}
+                                        from jsonValue: JSONValue) {
+        // not used in frameworks
+    }
 
     public func textCaptureDeserializer(_ deserializer: TextCaptureDeserializer,
                                         didFinishDeserializingSettings settings: TextCaptureSettings,
-                                        from JSONValue: JSONValue) {}
+                                        from jsonValue: JSONValue) {
+        // not used in frameworks
+    }
 
     public func textCaptureDeserializer(_ deserializer: TextCaptureDeserializer,
                                         didStartDeserializingOverlay overlay: TextCaptureOverlay,
-                                        from JSONValue: JSONValue) {}
+                                        from jsonValue: JSONValue) {
+        // not used in frameworks
+    }
 
     public func textCaptureDeserializer(_ deserializer: TextCaptureDeserializer,
                                         didFinishDeserializingOverlay overlay: TextCaptureOverlay,
-                                        from JSONValue: JSONValue) {}
+                                        from jsonValue: JSONValue) {
+        // not used in frameworks
+    }
 }

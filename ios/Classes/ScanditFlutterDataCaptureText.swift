@@ -33,20 +33,20 @@ public class ScanditFlutterDataCaptureText: NSObject, ScanditFlutterDataCaptureT
     var eventSink: FlutterEventSink?
     var hasListeners = false
 
-    private var _textCapture: TextCapture?
+    private var textCaptureMode: TextCapture?
     var textCapture: TextCapture? {
         get {
-            return _textCapture
+            return textCaptureMode
         }
         set {
-            _textCapture?.removeListener(self)
-            _textCapture = newValue
-            _textCapture?.addListener(self)
+            textCaptureMode?.removeListener(self)
+            textCaptureMode = newValue
+            textCaptureMode?.addListener(self)
         }
     }
-    
+
     var textCaptureLock = CallbackLock<Bool>(name: ScanditFlutterDataCaptureTextEvent.didCaptureText.rawValue)
-    
+
     @objc
     public init(with messenger: FlutterBinaryMessenger) {
         let prefix = "com.scandit.datacapture.text.capture"
@@ -90,9 +90,13 @@ public class ScanditFlutterDataCaptureText: NSObject, ScanditFlutterDataCaptureT
     }
 
     private func defaults(_ result: FlutterResult) {
-        let defaultsData = try! JSONSerialization.data(withJSONObject: defaults, options: [])
-        let jsonString = String(data: defaultsData, encoding: .utf8)
-        result(jsonString)
+        do {
+            let defaultsData = try JSONSerialization.data(withJSONObject: defaults, options: [])
+            let jsonString = String(data: defaultsData, encoding: .utf8)
+            result(jsonString)
+        } catch {
+            result(FlutterError(code: "-1", message: "Unable to load the defaults. \(error)", details: nil))
+        }
     }
 
     public func addListener(_ result: FlutterResult) {

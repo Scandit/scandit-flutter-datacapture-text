@@ -7,7 +7,7 @@
 package com.scandit.datacapture.flutter.text
 
 import androidx.annotation.NonNull
-import com.scandit.datacapture.flutter.core.utils.EventHandler
+import com.scandit.datacapture.flutter.core.utils.FlutterEmitter
 import com.scandit.datacapture.flutter.text.listeners.ScanditFlutterTextCaptureListener
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.BinaryMessenger
@@ -59,7 +59,7 @@ class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, MethodCallHandle
 
     private fun provideScanditFlutterTextCaptureListener(binaryMessenger: BinaryMessenger) =
         ScanditFlutterTextCaptureListener(
-            EventHandler(
+            FlutterEmitter(
                 EventChannel(
                     binaryMessenger,
                     ScanditFlutterTextCaptureListener.CHANNEL_NAME

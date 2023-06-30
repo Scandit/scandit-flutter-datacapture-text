@@ -6,26 +6,25 @@
 
 package com.scandit.datacapture.flutter.text.data.defaults
 
-import com.scandit.datacapture.flutter.core.data.SerializableData
-import com.scandit.datacapture.flutter.core.data.defaults.SerializableCameraSettingsDefaults
+import com.scandit.datacapture.frameworks.core.data.SerializableData
+import com.scandit.datacapture.frameworks.core.data.defaults.CameraSettingsDefaults
 import com.scandit.datacapture.text.capture.TextCapture
 import com.scandit.datacapture.text.capture.TextCaptureSettings
 import com.scandit.datacapture.text.ui.TextCaptureOverlay
 import org.json.JSONObject
 
 class SerializableTextCaptureDefaults(
-    private val recommendedCameraSettings: SerializableCameraSettingsDefaults,
+    private val recommendedCameraSettings: CameraSettingsDefaults,
     private val textCaptureOverlayDefaults: SerializableTextCaptureOverlayDefaults,
     private val textCaptureSettingsDefaults: SerializableTextCaptureSettingsDefaults
 ) : SerializableData {
 
-    override fun toJson(): JSONObject = JSONObject(
+    override fun toMap(): Map<String, Any?> =
         mapOf(
-            FIELD_RECOMMENDED_CAMERA_SETTINGS to recommendedCameraSettings.toJson(),
-            FIELD_TEXT_CAPTURE_OVERLAY to textCaptureOverlayDefaults.toJson(),
-            FIELD_TEXT_CAPTURE_SETTINGS to textCaptureSettingsDefaults.toJson()
+            FIELD_RECOMMENDED_CAMERA_SETTINGS to recommendedCameraSettings.toMap(),
+            FIELD_TEXT_CAPTURE_OVERLAY to textCaptureOverlayDefaults.toMap(),
+            FIELD_TEXT_CAPTURE_SETTINGS to textCaptureSettingsDefaults.toMap()
         )
-    )
 
     companion object {
         private const val FIELD_RECOMMENDED_CAMERA_SETTINGS = "RecommendedCameraSettings"
@@ -34,13 +33,13 @@ class SerializableTextCaptureDefaults(
 
         @JvmStatic
         fun createDefaults(): String {
-            return SerializableTextCaptureDefaults(
-                SerializableCameraSettingsDefaults(
-                    TextCapture.createRecommendedCameraSettings()
-                ),
-                SerializableTextCaptureOverlayDefaults(TextCaptureOverlay.defaultBrush()),
-                SerializableTextCaptureSettingsDefaults(TextCaptureSettings.fromJson("{}"))
-            ).toJson().toString()
+            return JSONObject(
+                SerializableTextCaptureDefaults(
+                    CameraSettingsDefaults.create(TextCapture.createRecommendedCameraSettings()),
+                    SerializableTextCaptureOverlayDefaults(TextCaptureOverlay.defaultBrush()),
+                    SerializableTextCaptureSettingsDefaults(TextCaptureSettings.fromJson("{}"))
+                ).toMap()
+            ).toString()
         }
     }
 }

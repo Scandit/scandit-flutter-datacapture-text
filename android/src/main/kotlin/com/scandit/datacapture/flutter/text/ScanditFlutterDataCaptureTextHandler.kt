@@ -7,10 +7,10 @@
 package com.scandit.datacapture.flutter.text
 
 import com.scandit.datacapture.core.json.JsonValue
-import com.scandit.datacapture.flutter.core.common.LastFrameDataHolder
-import com.scandit.datacapture.flutter.core.deserializers.Deserializers
 import com.scandit.datacapture.flutter.text.data.defaults.SerializableTextCaptureDefaults
 import com.scandit.datacapture.flutter.text.listeners.ScanditFlutterTextCaptureListener
+import com.scandit.datacapture.frameworks.core.deserialization.Deserializers
+import com.scandit.datacapture.frameworks.core.utils.LastFrameData
 import com.scandit.datacapture.text.capture.TextCapture
 import com.scandit.datacapture.text.capture.serialization.TextCaptureDeserializer
 import com.scandit.datacapture.text.capture.serialization.TextCaptureDeserializerListener
@@ -74,7 +74,9 @@ class ScanditFlutterDataCaptureTextHandler(
                 textCaptureListener.finishDidCaptureText(call.arguments as Boolean)
                 result.success(null)
             }
-            "getLastFrameData" -> LastFrameDataHolder.handleGetRequest(result)
+            "getLastFrameData" -> LastFrameData.getLastFrameDataJson {
+                result.success(it)
+            }
         }
     }
 

@@ -7,19 +7,17 @@
 package com.scandit.datacapture.flutter.text.data.defaults
 
 import com.scandit.datacapture.core.ui.style.Brush
-import com.scandit.datacapture.flutter.core.data.SerializableData
-import com.scandit.datacapture.flutter.core.data.defaults.SerializableBrushDefaults
-import org.json.JSONObject
+import com.scandit.datacapture.frameworks.core.data.SerializableData
+import com.scandit.datacapture.frameworks.core.data.defaults.BrushDefaults
 
 class SerializableTextCaptureOverlayDefaults(
     private val defaultBrush: Brush
 ) : SerializableData {
 
-    override fun toJson(): JSONObject = JSONObject(
+    override fun toMap(): Map<String, Any?> =
         mapOf(
-            FIELD_DEFAULT_TEXT_BRUSH to SerializableBrushDefaults(defaultBrush).toJson()
+            FIELD_DEFAULT_TEXT_BRUSH to BrushDefaults.get(defaultBrush)
         )
-    )
 
     companion object {
         private const val FIELD_DEFAULT_TEXT_BRUSH = "Brush"

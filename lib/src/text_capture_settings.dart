@@ -40,7 +40,7 @@ class TextCaptureSettings implements Serializable {
   Map<String, dynamic> toMap() {
     var json = {
       'duplicateFilter': duplicateFilter.inMilliseconds,
-      'recognitionDirection': recognitionDirection.jsonValue,
+      'recognitionDirection': recognitionDirection.toString(),
       'locationSelection': locationSelection == null ? {'type': 'none'} : locationSelection?.toMap(),
       'properties': _properties
     };

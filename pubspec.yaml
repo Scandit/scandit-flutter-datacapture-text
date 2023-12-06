@@ -1,19 +1,19 @@
 name: scandit_flutter_datacapture_text
-description: This plugin builds the foundation of all text capture related functionality offered by the Scandit Data Capture SDK.
-version: 6.20.1
+description: Scandit Data Capture SDK for Flutter.
+version: 6.17.3
 homepage: https://scandit.com
 
 
 
 environment:
-  sdk: ">=2.19.0 <4.0.0"
-  flutter: ">=3.10.0"
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.17.3"
 
 dependencies:
   flutter:
     sdk: flutter
   scandit_flutter_datacapture_core:
-    '>=6.20.1 <6.20.2'
+    '>=6.17.3 <6.17.4'
 
 dev_dependencies:
   flutter_test:

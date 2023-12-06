@@ -64,7 +64,7 @@ public class ScanditFlutterDataCaptureText: NSObject, ScanditFlutterDataCaptureT
     }
 
     @objc
-    func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    func handleMethodCall(_ call: FlutterMethodCall, result: FlutterResult) {
         switch call.method {
         case FunctionNames.getDefaults:
             defaults(result)

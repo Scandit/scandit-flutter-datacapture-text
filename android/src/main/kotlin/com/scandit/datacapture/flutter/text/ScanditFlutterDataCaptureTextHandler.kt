@@ -7,10 +7,13 @@
 package com.scandit.datacapture.flutter.text
 
 import com.scandit.datacapture.core.json.JsonValue
-import com.scandit.datacapture.flutter.core.common.LastFrameDataHolder
-import com.scandit.datacapture.flutter.core.deserializers.Deserializers
+import com.scandit.datacapture.flutter.core.utils.rejectKotlinError
 import com.scandit.datacapture.flutter.text.data.defaults.SerializableTextCaptureDefaults
 import com.scandit.datacapture.flutter.text.listeners.ScanditFlutterTextCaptureListener
+import com.scandit.datacapture.frameworks.core.deserialization.Deserializers
+import com.scandit.datacapture.frameworks.core.errors.FrameDataNullError
+import com.scandit.datacapture.frameworks.core.utils.DefaultLastFrameData
+import com.scandit.datacapture.frameworks.core.utils.LastFrameData
 import com.scandit.datacapture.text.capture.TextCapture
 import com.scandit.datacapture.text.capture.serialization.TextCaptureDeserializer
 import com.scandit.datacapture.text.capture.serialization.TextCaptureDeserializerListener
@@ -20,7 +23,8 @@ import io.flutter.plugin.common.MethodChannel
 
 class ScanditFlutterDataCaptureTextHandler(
     private val textCaptureListener: ScanditFlutterTextCaptureListener,
-    private val textCaptureDeserializer: TextCaptureDeserializer = TextCaptureDeserializer()
+    private val textCaptureDeserializer: TextCaptureDeserializer = TextCaptureDeserializer(),
+    private val lastFrameData: LastFrameData = DefaultLastFrameData.getInstance()
 ) : FlutterPlugin,
     TextCaptureDeserializerListener,
     MethodChannel.MethodCallHandler {
@@ -66,15 +70,24 @@ class ScanditFlutterDataCaptureTextHandler(
                 textCaptureListener.enableListener()
                 result.success(null)
             }
+
             "removeTextCaptureListener" -> {
                 textCaptureListener.disableListener()
                 result.success(null)
             }
+
             "textCaptureFinishDidCapture" -> {
                 textCaptureListener.finishDidCaptureText(call.arguments as Boolean)
                 result.success(null)
             }
-            "getLastFrameData" -> LastFrameDataHolder.handleGetRequest(result)
+
+            "getLastFrameData" -> lastFrameData.getLastFrameDataJson {
+                if (it.isNullOrBlank()) {
+                    result.rejectKotlinError(FrameDataNullError())
+                    return@getLastFrameDataJson
+                }
+                result.success(it)
+            }
         }
     }
 

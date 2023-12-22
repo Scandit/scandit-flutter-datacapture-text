@@ -28,8 +28,6 @@ abstract class TextCaptureAdvancedListener {
 class TextCapture extends DataCaptureMode {
   bool _enabled = true;
 
-  bool _isInCallback = false;
-
   TextCaptureSettings _settings;
 
   final List<TextCaptureListener> _listeners = [];
@@ -66,9 +64,6 @@ class TextCapture extends DataCaptureMode {
   @override
   set isEnabled(bool newValue) {
     _enabled = newValue;
-    if (_isInCallback) {
-      return;
-    }
     didChange();
   }
 
@@ -174,14 +169,12 @@ class _TextCaptureListenerController {
   }
 
   void _notifyListenersOfDidCaptureText(TextCaptureSession session) {
-    _textCapture._isInCallback = true;
     for (var listener in _textCapture._listeners) {
       listener.didCaptureText(_textCapture, session);
     }
     for (var listener in _textCapture._advancedListeners) {
       listener.didCaptureText(_textCapture, session, _getLastFrameData);
     }
-    _textCapture._isInCallback = false;
   }
 
   Future<FrameData> _getLastFrameData() {

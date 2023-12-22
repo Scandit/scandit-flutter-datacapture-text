@@ -12,6 +12,7 @@ import com.scandit.datacapture.flutter.text.data.defaults.SerializableTextCaptur
 import com.scandit.datacapture.flutter.text.listeners.ScanditFlutterTextCaptureListener
 import com.scandit.datacapture.frameworks.core.deserialization.Deserializers
 import com.scandit.datacapture.frameworks.core.errors.FrameDataNullError
+import com.scandit.datacapture.frameworks.core.utils.DefaultLastFrameData
 import com.scandit.datacapture.frameworks.core.utils.LastFrameData
 import com.scandit.datacapture.text.capture.TextCapture
 import com.scandit.datacapture.text.capture.serialization.TextCaptureDeserializer
@@ -22,7 +23,8 @@ import io.flutter.plugin.common.MethodChannel
 
 class ScanditFlutterDataCaptureTextHandler(
     private val textCaptureListener: ScanditFlutterTextCaptureListener,
-    private val textCaptureDeserializer: TextCaptureDeserializer = TextCaptureDeserializer()
+    private val textCaptureDeserializer: TextCaptureDeserializer = TextCaptureDeserializer(),
+    private val lastFrameData: LastFrameData = DefaultLastFrameData.getInstance()
 ) : FlutterPlugin,
     TextCaptureDeserializerListener,
     MethodChannel.MethodCallHandler {
@@ -79,7 +81,7 @@ class ScanditFlutterDataCaptureTextHandler(
                 result.success(null)
             }
 
-            "getLastFrameData" -> LastFrameData.getLastFrameDataJson {
+            "getLastFrameData" -> lastFrameData.getLastFrameDataJson {
                 if (it.isNullOrBlank()) {
                     result.rejectKotlinError(FrameDataNullError())
                     return@getLastFrameDataJson

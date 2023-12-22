@@ -6,20 +6,20 @@
 
 package com.scandit.datacapture.flutter.text
 
-import androidx.annotation.NonNull
 import com.scandit.datacapture.flutter.core.utils.FlutterEmitter
 import com.scandit.datacapture.flutter.text.listeners.ScanditFlutterTextCaptureListener
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
+import java.lang.ref.WeakReference
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /** ScanditFlutterDatacaptureTextPlugin */
-class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, MethodCallHandler {
+class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, ActivityAware {
     companion object {
         @JvmStatic
         private val lock = ReentrantLock()
@@ -31,30 +31,59 @@ class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, MethodCallHandle
     private var scanditFlutterDataCaptureTextHandler:
         ScanditFlutterDataCaptureTextHandler? = null
 
-    override fun onAttachedToEngine(
-        @NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
-    ) {
+    private var flutterPluginBinding: WeakReference<FlutterPluginBinding?> = WeakReference(null)
+
+    override fun onAttachedToEngine(binding: FlutterPluginBinding) {
+        flutterPluginBinding = WeakReference(binding)
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
+        flutterPluginBinding = WeakReference(null)
+    }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        onAttached()
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        onDetached()
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        onAttached()
+    }
+
+    override fun onDetachedFromActivity() {
+        onDetached()
+    }
+
+    private fun onAttached() {
         lock.withLock {
             if (isPluginAttached) return
-
-            scanditFlutterDataCaptureTextHandler = ScanditFlutterDataCaptureTextHandler(
-                provideScanditFlutterTextCaptureListener(flutterPluginBinding.binaryMessenger)
-            )
-            scanditFlutterDataCaptureTextHandler?.onAttachedToEngine(flutterPluginBinding)
+            val flutterBinding = flutterPluginBinding.get() ?: return
+            setupModule(flutterBinding)
             isPluginAttached = true
         }
     }
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        result.notImplemented()
-    }
-
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    private fun onDetached() {
         lock.withLock {
-            scanditFlutterDataCaptureTextHandler?.onDetachedFromEngine(binding)
-            scanditFlutterDataCaptureTextHandler = null
+            val flutterBinding = flutterPluginBinding.get() ?: return
+            disposeModule(flutterBinding)
             isPluginAttached = false
         }
+    }
+
+    private fun setupModule(binding: FlutterPluginBinding) {
+        scanditFlutterDataCaptureTextHandler = ScanditFlutterDataCaptureTextHandler(
+            provideScanditFlutterTextCaptureListener(binding.binaryMessenger)
+        )
+        scanditFlutterDataCaptureTextHandler?.onAttachedToEngine(binding)
+    }
+
+    private fun disposeModule(binding: FlutterPluginBinding) {
+        scanditFlutterDataCaptureTextHandler?.onDetachedFromEngine(binding)
+        scanditFlutterDataCaptureTextHandler = null
     }
 
     private fun provideScanditFlutterTextCaptureListener(binaryMessenger: BinaryMessenger) =

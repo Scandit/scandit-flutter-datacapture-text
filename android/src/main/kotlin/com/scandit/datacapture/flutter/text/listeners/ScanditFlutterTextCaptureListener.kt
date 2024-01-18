@@ -9,7 +9,6 @@ package com.scandit.datacapture.flutter.text.listeners
 import com.scandit.datacapture.core.data.FrameData
 import com.scandit.datacapture.flutter.core.utils.EventSinkWithResult
 import com.scandit.datacapture.flutter.core.utils.FlutterEmitter
-import com.scandit.datacapture.frameworks.core.utils.DefaultLastFrameData
 import com.scandit.datacapture.frameworks.core.utils.LastFrameData
 import com.scandit.datacapture.text.capture.TextCapture
 import com.scandit.datacapture.text.capture.TextCaptureListener
@@ -20,8 +19,7 @@ import org.json.JSONObject
 class ScanditFlutterTextCaptureListener(
     private val flutterEmitter: FlutterEmitter,
     private val onTextCaptured: EventSinkWithResult<Boolean> =
-        EventSinkWithResult(ON_TEXT_CAPTURED),
-    private val lastFrameData: LastFrameData = DefaultLastFrameData.getInstance()
+        EventSinkWithResult(ON_TEXT_CAPTURED)
 ) : TextCaptureListener {
 
     fun enableListener() {
@@ -34,7 +32,7 @@ class ScanditFlutterTextCaptureListener(
     }
 
     override fun onTextCaptured(mode: TextCapture, session: TextCaptureSession, data: FrameData) {
-        lastFrameData.frameData.set(data)
+        LastFrameData.frameData.set(data)
         flutterEmitter.getCurrentEventSink()?.let {
             val params = JSONObject(
                 mapOf(
@@ -45,7 +43,7 @@ class ScanditFlutterTextCaptureListener(
             mode.isEnabled =
                 onTextCaptured.emitForResult(it, params, mode.isEnabled)
         }
-        lastFrameData.frameData.set(null)
+        LastFrameData.frameData.set(null)
     }
 
     fun finishDidCaptureText(enabled: Boolean) {

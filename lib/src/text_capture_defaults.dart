@@ -12,7 +12,7 @@ import 'package:scandit_flutter_datacapture_core/scandit_flutter_datacapture_cor
 // ignore: avoid_classes_with_only_static_members
 class TextCaptureDefaults {
   static bool _isInitialized = false;
-  static MethodChannel channel = MethodChannel("com.scandit.datacapture.text.capture.method/text_capture_defaults");
+  static MethodChannel channel = MethodChannel("com.scandit.datacapture.text.capture/method_channel");
   static late CameraSettingsDefaults _cameraSettingsDefaults;
   static late TextCaptureOverlayDefaults _textCaptureOverlayDefaults;
   static late TextCaptureSettingsDefaults _textCaptureSettingsDefaults;

@@ -9,6 +9,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:scandit_flutter_datacapture_core/scandit_flutter_datacapture_core.dart';
+import 'package:scandit_flutter_datacapture_text/src/text_capture_function_names.dart';
 
 import 'text_capture_defaults.dart';
 import 'text_capture_feedback.dart';
@@ -16,7 +17,7 @@ import 'text_capture_session.dart';
 import 'text_capture_settings.dart';
 
 abstract class TextCaptureListener {
-  static const String _didCaptureEventName = "textCaptureListener-didCapture";
+  static const String _didCaptureEventName = "TextCaptureListener.didCaptureText";
 
   void didCaptureText(TextCapture textCapture, TextCaptureSession session);
 }
@@ -64,14 +65,14 @@ class TextCapture extends DataCaptureMode {
   @override
   set isEnabled(bool newValue) {
     _enabled = newValue;
-    didChange();
+    _controller.setModeEnabledState(newValue);
   }
 
   TextCaptureFeedback get feedback => _feedback;
 
   set feedback(TextCaptureFeedback newValue) {
     _feedback = newValue;
-    didChange();
+    _controller.updateMode();
   }
 
   void addListener(TextCaptureListener listener) {
@@ -114,40 +115,26 @@ class TextCapture extends DataCaptureMode {
 
   Future<void> applySettings(TextCaptureSettings settings) {
     _settings = settings;
-    return didChange();
-  }
-
-  Future<void> didChange() {
-    if (context != null) {
-      return context!.update();
-    }
-    return Future.value();
+    return _controller.applySettings(settings);
   }
 
   @override
   Map<String, dynamic> toMap() {
-    return {'type': 'textCapture', 'enabled': _enabled, 'feedback': _feedback.toMap(), 'settings': _settings.toMap()};
+    return {'type': 'textCapture', 'feedback': _feedback.toMap(), 'settings': _settings.toMap()};
   }
 }
 
 class _TextCaptureListenerController {
-  final EventChannel _eventChannel =
-      const EventChannel('com.scandit.datacapture.text.capture.event/text_capture_listener');
-  final MethodChannel _methodChannel =
-      MethodChannel('com.scandit.datacapture.text.capture.method/text_capture_listener');
+  final EventChannel _eventChannel = const EventChannel(TextCaptureFunctionNames.eventsChannelName);
+  final MethodChannel _methodChannel = MethodChannel(TextCaptureFunctionNames.methodsChannelName);
   final TextCapture _textCapture;
   StreamSubscription<dynamic>? _textCaptureSubscription;
-
-  static const String _addTextCaptureListenerName = 'addTextCaptureListener';
-  static const String _textCaptureFinishDidCaptureName = 'textCaptureFinishDidCapture';
-  static const String _getLastFrameDataName = 'getLastFrameData';
-  static const String _removeTextCaptureListenerName = 'removeTextCaptureListener';
 
   _TextCaptureListenerController.forTextCapture(this._textCapture);
 
   void subscribeListeners() {
     _methodChannel
-        .invokeMethod(_addTextCaptureListenerName)
+        .invokeMethod(TextCaptureFunctionNames.addTextCaptureListenerName)
         .then((value) => _setupTextCaptureSubscription(), onError: _onError);
   }
 
@@ -161,7 +148,7 @@ class _TextCaptureListenerController {
       if (eventName == TextCaptureListener._didCaptureEventName) {
         _notifyListenersOfDidCaptureText(session);
         _methodChannel
-            .invokeMethod(_textCaptureFinishDidCaptureName, _textCapture.isEnabled)
+            .invokeMethod(TextCaptureFunctionNames.textCaptureFinishDidCaptureName, _textCapture.isEnabled)
             // ignore: unnecessary_lambdas
             .then((value) => null, onError: (error) => print(error));
       }
@@ -179,18 +166,35 @@ class _TextCaptureListenerController {
 
   Future<FrameData> _getLastFrameData() {
     return _methodChannel
-        .invokeMethod(_getLastFrameDataName)
-        .then((value) => getFrom(value as String), onError: _onError);
+        .invokeMethod(TextCaptureFunctionNames.getLastFrameDataName)
+        .then((value) => DefaultFrameData.fromJSON(Map<String, dynamic>.from(value as Map)), onError: _onError);
   }
 
-  DefaultFrameData getFrom(String response) {
-    final decoded = jsonDecode(response);
-    return DefaultFrameData.fromJSON(decoded);
+  Future<void> setModeEnabledState(bool newValue) {
+    return _methodChannel
+        .invokeMethod(TextCaptureFunctionNames.setModeEnabledState, newValue)
+        .then((value) => null, onError: _onError);
+  }
+
+  Future<void> updateMode() {
+    var encoded = jsonEncode(_textCapture.toMap());
+    return _methodChannel
+        .invokeMethod(TextCaptureFunctionNames.updateTextCaptureMode, encoded)
+        .then((value) => null, onError: _onError);
+  }
+
+  Future<void> applySettings(TextCaptureSettings settings) {
+    var encoded = jsonEncode(settings.toMap());
+    return _methodChannel
+        .invokeMethod(TextCaptureFunctionNames.applyTextCaptureModeSettings, encoded)
+        .then((value) => null, onError: _onError);
   }
 
   void unsubscribeListeners() {
     _textCaptureSubscription?.cancel();
-    _methodChannel.invokeMethod(_removeTextCaptureListenerName).then((value) => null, onError: _onError);
+    _methodChannel
+        .invokeMethod(TextCaptureFunctionNames.removeTextCaptureListenerName)
+        .then((value) => null, onError: _onError);
   }
 
   void _onError(Object? error, StackTrace? stackTrace) {

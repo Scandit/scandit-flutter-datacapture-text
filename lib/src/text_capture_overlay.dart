@@ -4,13 +4,19 @@
  * Copyright (C) 2021- Scandit AG. All rights reserved.
  */
 
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
 import 'package:scandit_flutter_datacapture_core/scandit_flutter_datacapture_core.dart';
 
 import 'text_capture.dart';
 import 'text_capture_defaults.dart';
+import 'text_capture_function_names.dart';
 
 class TextCaptureOverlay extends DataCaptureOverlay {
-  TextCapture _textCapture;
+  // ignore: unused_field
+  final TextCapture _textCapture;
+  late _TextCaptureOverlayController _controller;
 
   Brush _brush = defaultBrush;
 
@@ -19,6 +25,7 @@ class TextCaptureOverlay extends DataCaptureOverlay {
 
   TextCaptureOverlay._(this._textCapture, this.view) : super('textCapture') {
     view?.addOverlay(this);
+    _controller = _TextCaptureOverlayController(this);
   }
 
   TextCaptureOverlay.withTextCapture(TextCapture textCapture) : this.withTextCaptureForView(textCapture, null);
@@ -33,7 +40,7 @@ class TextCaptureOverlay extends DataCaptureOverlay {
 
   set brush(Brush newValue) {
     _brush = newValue;
-    _textCapture.didChange();
+    _controller.update();
   }
 
   bool _shouldShowScanAreaGuides = false;
@@ -42,7 +49,7 @@ class TextCaptureOverlay extends DataCaptureOverlay {
 
   set shouldShowScanAreaGuides(bool newValue) {
     _shouldShowScanAreaGuides = newValue;
-    _textCapture.didChange();
+    _controller.update();
   }
 
   Viewfinder? _viewfinder;
@@ -51,7 +58,7 @@ class TextCaptureOverlay extends DataCaptureOverlay {
 
   set viewfinder(Viewfinder? newValue) {
     _viewfinder = newValue;
-    _textCapture.didChange();
+    _controller.update();
   }
 
   @override
@@ -63,5 +70,21 @@ class TextCaptureOverlay extends DataCaptureOverlay {
       'viewfinder': _viewfinder == null ? {'type': 'none'} : _viewfinder?.toMap()
     });
     return json;
+  }
+}
+
+class _TextCaptureOverlayController {
+  late final MethodChannel _methodChannel = _getChannel();
+
+  TextCaptureOverlay _overlay;
+
+  _TextCaptureOverlayController(this._overlay);
+
+  Future<void> update() {
+    return _methodChannel.invokeMethod(TextCaptureFunctionNames.updateTextCaptureOverlay, jsonEncode(_overlay.toMap()));
+  }
+
+  MethodChannel _getChannel() {
+    return MethodChannel(TextCaptureFunctionNames.methodsChannelName);
   }
 }

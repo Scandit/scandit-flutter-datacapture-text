@@ -27,36 +27,29 @@ class TextCaptureMethodHandler(
                 JSONObject(textCaptureModule.getDefaults()).toString()
             )
 
-            METHOD_ADD_LISTENER -> {
+            METHOD_ADD_LISTENER ->
                 textCaptureModule.addListener(FlutterResult(result))
-            }
 
-            METHOD_REMOVE_LISTENER -> {
+            METHOD_REMOVE_LISTENER ->
                 textCaptureModule.removeListener(FlutterResult(result))
-            }
 
-            METHOD_FINISH_DID_CAPTURE -> {
+            METHOD_FINISH_DID_CAPTURE ->
                 textCaptureModule.finishDidCapture(call.arguments as Boolean, FlutterResult(result))
-            }
 
-            METHOD_SET_MODE_ENABLED_STATE -> {
+            METHOD_SET_MODE_ENABLED_STATE ->
                 textCaptureModule.setModeEnabled(call.arguments as Boolean, FlutterResult(result))
-            }
 
-            METHOD_UPDATE_MODE -> {
+            METHOD_UPDATE_MODE ->
                 textCaptureModule.updateModeFromJson(
                     call.arguments as String,
                     FlutterResult(result)
                 )
-            }
 
-            METHOD_APPLY_SETTINGS -> {
+            METHOD_APPLY_SETTINGS ->
                 textCaptureModule.applyModeSettings(call.arguments as String, FlutterResult(result))
-            }
 
-            METHOD_UPDATE_OVERLAY -> {
+            METHOD_UPDATE_OVERLAY ->
                 textCaptureModule.updateOverlay(call.arguments as String, FlutterResult(result))
-            }
 
             METHOD_GET_LAST_FRAME -> lastFrameData.getLastFrameDataBytes {
                 if (it == null) {

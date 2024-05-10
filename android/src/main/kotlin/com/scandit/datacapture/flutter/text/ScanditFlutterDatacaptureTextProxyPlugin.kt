@@ -36,6 +36,7 @@ class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, ActivityAware {
 
     private var flutterPluginBinding: WeakReference<FlutterPluginBinding?> = WeakReference(null)
 
+
     override fun onAttachedToEngine(binding: FlutterPluginBinding) {
         flutterPluginBinding = WeakReference(binding)
     }

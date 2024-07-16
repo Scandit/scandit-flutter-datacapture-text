@@ -8,6 +8,7 @@ package com.scandit.datacapture.flutter.text
 
 import com.scandit.datacapture.flutter.core.extensions.getMethodChannel
 import com.scandit.datacapture.flutter.core.utils.FlutterEmitter
+import com.scandit.datacapture.frameworks.core.locator.DefaultServiceLocator
 import com.scandit.datacapture.frameworks.text.TextCaptureModule
 import com.scandit.datacapture.frameworks.text.listeners.FrameworksTextCaptureListener
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -30,19 +31,20 @@ class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, ActivityAware {
         private var isPluginAttached = false
     }
 
-    private var textCaptureModule: TextCaptureModule? = null
+    private val serviceLocator = DefaultServiceLocator.getInstance()
 
     private var textCaptureMethodChannel: MethodChannel? = null
 
     private var flutterPluginBinding: WeakReference<FlutterPluginBinding?> = WeakReference(null)
 
-
     override fun onAttachedToEngine(binding: FlutterPluginBinding) {
         flutterPluginBinding = WeakReference(binding)
+        onAttached()
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         flutterPluginBinding = WeakReference(null)
+        onDetached()
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -63,7 +65,9 @@ class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, ActivityAware {
 
     private fun onAttached() {
         lock.withLock {
-            if (isPluginAttached) return
+            if (isPluginAttached) {
+                disposeModule()
+            }
             val flutterBinding = flutterPluginBinding.get() ?: return
             setupModule(flutterBinding)
             isPluginAttached = true
@@ -85,7 +89,7 @@ class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, ActivityAware {
             )
         )
 
-        textCaptureModule = TextCaptureModule(
+        val textCaptureModule = TextCaptureModule(
             FrameworksTextCaptureListener(
                 eventEmitter
             )
@@ -98,10 +102,11 @@ class ScanditFlutterDatacaptureTextProxyPlugin : FlutterPlugin, ActivityAware {
                 it.setMethodCallHandler(TextCaptureMethodHandler(module))
             }
         }
+        serviceLocator.register(textCaptureModule)
     }
 
     private fun disposeModule() {
-        textCaptureModule?.onDestroy()
+        serviceLocator.remove(TextCaptureModule::class.java.name)?.onDestroy()
         textCaptureMethodChannel?.setMethodCallHandler(null)
     }
 }

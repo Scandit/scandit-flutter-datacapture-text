@@ -4,6 +4,7 @@
  * Copyright (C) 2021- Scandit AG. All rights reserved.
  */
 
+@Deprecated("Text Capture mode is deprecated.")
 library scandit_flutter_datacapture_text;
 
 export 'src/captured_text.dart' show CapturedText;

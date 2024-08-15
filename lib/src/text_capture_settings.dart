@@ -8,24 +8,44 @@ import 'package:scandit_flutter_datacapture_core/scandit_flutter_datacapture_cor
 
 import 'text_capture_defaults.dart';
 
+@Deprecated("Text Capture mode is deprecated.")
 class TextCaptureSettings implements Serializable {
   final Map<String, dynamic> _properties = {};
   final Map<String, dynamic> _textRecognizerSettings = {};
 
-  Direction recognitionDirection = TextCaptureDefaults.textCaptureSettingsDefaults.recognitionDirection;
+  Direction _recognitionDirection = TextCaptureDefaults.textCaptureSettingsDefaults.recognitionDirection;
 
-  Duration duplicateFilter = Duration(milliseconds: TextCaptureDefaults.textCaptureSettingsDefaults.duplicateFilter);
+  @Deprecated("Text Capture mode is deprecated.")
+  Direction get recognitionDirection => _recognitionDirection;
+
+  @Deprecated("Text Capture mode is deprecated.")
+  set recognitionDirection(Direction newValue) {
+    _recognitionDirection = newValue;
+  }
+
+  Duration _duplicateFilter = Duration(milliseconds: TextCaptureDefaults.textCaptureSettingsDefaults.duplicateFilter);
+
+  @Deprecated("Text Capture mode is deprecated.")
+  Duration get duplicateFilter => _duplicateFilter;
+
+  @Deprecated("Text Capture mode is deprecated.")
+  set duplicateFilter(Duration newValue) {
+    _duplicateFilter = newValue;
+  }
 
   LocationSelection? locationSelection;
 
+  @Deprecated("Text Capture mode is deprecated.")
   void setProperty<T>(String name, T value) {
     _properties[name] = value;
   }
 
+  @Deprecated("Text Capture mode is deprecated.")
   T getProperty<T>(String name) {
     return _properties[name] as T;
   }
 
+  @Deprecated("Text Capture mode is deprecated.")
   static TextCaptureSettings fromJSON(Map<String, dynamic> json) {
     var settings = TextCaptureSettings();
 

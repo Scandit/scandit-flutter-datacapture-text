@@ -6,18 +6,15 @@
 
 import 'package:scandit_flutter_datacapture_core/scandit_flutter_datacapture_core.dart';
 
-@Deprecated("Text Capture mode is deprecated.")
 class CapturedText {
   final String _value;
 
-  @Deprecated("Text Capture mode is deprecated.")
   String get value {
     return _value;
   }
 
   final Quadrilateral _location;
 
-  @Deprecated("Text Capture mode is deprecated.")
   Quadrilateral get location {
     return _location;
   }

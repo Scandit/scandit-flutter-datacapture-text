@@ -10,7 +10,6 @@ import 'text_capture_defaults.dart';
 
 // ignore: avoid_classes_with_only_static_members
 class ScanditFlutterDataCaptureText {
-  @Deprecated("Text Capture mode is deprecated.")
   static Future<void> initialize() async {
     await ScanditFlutterDataCaptureCore.initialize();
     await TextCaptureDefaults.initializeDefaults();

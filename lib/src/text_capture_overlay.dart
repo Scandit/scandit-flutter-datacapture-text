@@ -13,7 +13,6 @@ import 'text_capture.dart';
 import 'text_capture_defaults.dart';
 import 'text_capture_function_names.dart';
 
-@Deprecated("Text Capture mode is deprecated.")
 class TextCaptureOverlay extends DataCaptureOverlay {
   // ignore: unused_field
   final TextCapture _textCapture;
@@ -29,21 +28,16 @@ class TextCaptureOverlay extends DataCaptureOverlay {
     _controller = _TextCaptureOverlayController(this);
   }
 
-  @Deprecated("Text Capture mode is deprecated.")
   TextCaptureOverlay.withTextCapture(TextCapture textCapture) : this.withTextCaptureForView(textCapture, null);
 
-  @Deprecated("Text Capture mode is deprecated.")
   TextCaptureOverlay.withTextCaptureForView(TextCapture textCapture, DataCaptureView? view) : this._(textCapture, view);
 
-  @Deprecated("Text Capture mode is deprecated.")
   static Brush get defaultBrush {
     return TextCaptureDefaults.textCaptureOverlayDefaults.defaultBrush;
   }
 
-  @Deprecated("Text Capture mode is deprecated.")
   Brush get brush => _brush;
 
-  @Deprecated("Text Capture mode is deprecated.")
   set brush(Brush newValue) {
     _brush = newValue;
     _controller.update();
@@ -51,10 +45,8 @@ class TextCaptureOverlay extends DataCaptureOverlay {
 
   bool _shouldShowScanAreaGuides = false;
 
-  @Deprecated("Text Capture mode is deprecated.")
   bool get shouldShowScanAreaGuides => _shouldShowScanAreaGuides;
 
-  @Deprecated("Text Capture mode is deprecated.")
   set shouldShowScanAreaGuides(bool newValue) {
     _shouldShowScanAreaGuides = newValue;
     _controller.update();
@@ -62,10 +54,8 @@ class TextCaptureOverlay extends DataCaptureOverlay {
 
   Viewfinder? _viewfinder;
 
-  @Deprecated("Text Capture mode is deprecated.")
   Viewfinder? get viewfinder => _viewfinder;
 
-  @Deprecated("Text Capture mode is deprecated.")
   set viewfinder(Viewfinder? newValue) {
     _viewfinder = newValue;
     _controller.update();

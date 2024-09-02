@@ -6,11 +6,9 @@
 
 import 'package:scandit_flutter_datacapture_core/scandit_flutter_datacapture_core.dart';
 
-@Deprecated("Text Capture mode is deprecated.")
 class TextCaptureFeedback implements Serializable {
   Feedback success = Feedback.defaultFeedback;
 
-  @Deprecated("Text Capture mode is deprecated.")
   static TextCaptureFeedback get defaultFeedback {
     return TextCaptureFeedback();
   }

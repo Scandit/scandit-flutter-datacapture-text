@@ -16,16 +16,21 @@ import 'text_capture_feedback.dart';
 import 'text_capture_session.dart';
 import 'text_capture_settings.dart';
 
+@Deprecated("Text Capture mode is deprecated.")
 abstract class TextCaptureListener {
   static const String _didCaptureEventName = "TextCaptureListener.didCaptureText";
 
+  @Deprecated("Text Capture mode is deprecated.")
   void didCaptureText(TextCapture textCapture, TextCaptureSession session);
 }
 
+@Deprecated("Text Capture mode is deprecated.")
 abstract class TextCaptureAdvancedListener {
+  @Deprecated("Text Capture mode is deprecated.")
   void didCaptureText(TextCapture textCapture, TextCaptureSession session, Future<FrameData> getFrameData());
 }
 
+@Deprecated("Text Capture mode is deprecated.")
 class TextCapture extends DataCaptureMode {
   bool _enabled = true;
 
@@ -45,8 +50,10 @@ class TextCapture extends DataCaptureMode {
     context?.addMode(this);
   }
 
+  @Deprecated("Text Capture mode is deprecated.")
   TextCapture.forContext(DataCaptureContext? context, TextCaptureSettings settings) : this._(context, settings);
 
+  @Deprecated("Text Capture mode is deprecated.")
   static CameraSettings get recommendedCameraSettings => _recommendedCameraSettings();
 
   static CameraSettings _recommendedCameraSettings() {
@@ -59,22 +66,27 @@ class TextCapture extends DataCaptureMode {
   @override
   DataCaptureContext? get context => super.context;
 
+  @Deprecated("Text Capture mode is deprecated.")
   @override
   bool get isEnabled => _enabled;
 
+  @Deprecated("Text Capture mode is deprecated.")
   @override
   set isEnabled(bool newValue) {
     _enabled = newValue;
     _controller.setModeEnabledState(newValue);
   }
 
+  @Deprecated("Text Capture mode is deprecated.")
   TextCaptureFeedback get feedback => _feedback;
 
+  @Deprecated("Text Capture mode is deprecated.")
   set feedback(TextCaptureFeedback newValue) {
     _feedback = newValue;
     _controller.updateMode();
   }
 
+  @Deprecated("Text Capture mode is deprecated.")
   void addListener(TextCaptureListener listener) {
     _checkAndSubscribeListeners();
     if (_listeners.contains(listener)) {
@@ -83,6 +95,7 @@ class TextCapture extends DataCaptureMode {
     _listeners.add(listener);
   }
 
+  @Deprecated("Text Capture mode is deprecated.")
   void addAdvancedListener(TextCaptureAdvancedListener listener) {
     _checkAndSubscribeListeners();
     if (_advancedListeners.contains(listener)) {
@@ -97,22 +110,26 @@ class TextCapture extends DataCaptureMode {
     }
   }
 
+  @Deprecated("Text Capture mode is deprecated.")
   void removeListener(TextCaptureListener listener) {
     _listeners.remove(listener);
     _checkAndUnsubscribeListeners();
   }
 
+  @Deprecated("Text Capture mode is deprecated.")
   void removeAdvancedListener(TextCaptureAdvancedListener listener) {
     _advancedListeners.remove(listener);
     _checkAndUnsubscribeListeners();
   }
 
+  @Deprecated("Text Capture mode is deprecated.")
   void _checkAndUnsubscribeListeners() {
     if (_listeners.isEmpty && _advancedListeners.isEmpty) {
       _controller.unsubscribeListeners();
     }
   }
 
+  @Deprecated("Text Capture mode is deprecated.")
   Future<void> applySettings(TextCaptureSettings settings) {
     _settings = settings;
     return _controller.applySettings(settings);

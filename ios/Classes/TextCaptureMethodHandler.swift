@@ -7,6 +7,7 @@
 import Flutter
 import scandit_flutter_datacapture_core
 import ScanditFrameworksText
+import ScanditFrameworksCore
 
 class TextCaptureMethodHandler {
     private enum FunctionNames {
@@ -42,7 +43,9 @@ class TextCaptureMethodHandler {
             textModule.finishDidCaptureText(enabled: call.arguments as? Bool ?? false)
             result(nil)
         case FunctionNames.getLastFrameData:
-            ScanditFlutterDataCaptureCore.getLastFrameData(reply: result)
+            LastFrameData.shared.getLastFrameDataBytes {
+                result($0)
+            }
         case FunctionNames.setModeEnabledState:
             textModule.setModeEnabled(enabled: call.arguments as? Bool ?? true)
             result(nil)

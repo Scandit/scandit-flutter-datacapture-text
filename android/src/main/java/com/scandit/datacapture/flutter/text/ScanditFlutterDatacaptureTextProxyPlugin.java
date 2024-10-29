@@ -84,7 +84,7 @@ public class ScanditFlutterDatacaptureTextProxyPlugin implements FlutterPlugin, 
     private void setupModules(@NonNull FlutterPluginBinding binding) {
         lock.lock();
         try {
-            TextCaptureModule textCaptureModule = (TextCaptureModule) serviceLocator.remove(TextCaptureModule.class.getName());
+            TextCaptureModule textCaptureModule = (TextCaptureModule) serviceLocator.resolve(TextCaptureModule.class.getName());
             if (textCaptureModule != null) return;
 
             textCaptureModule = TextCaptureModule.create(
